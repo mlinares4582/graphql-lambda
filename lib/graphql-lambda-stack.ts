@@ -1,16 +1,30 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
+import { Stack, StackProps ,} from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { join } from 'path';
+import { LambdaRestApi } from 'aws-cdk-lib/aws-apigateway';
+
+
+
 
 export class GraphqlLambdaStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    const graphqlLambda = new NodejsFunction(this, 'GraphqlLambda', {
+      entry: join(__dirname,"../lambda/graphql.ts"),
+      handler: "graphql.handler",
+      
+    });
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'GraphqlLambdaQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    new LambdaRestApi(this, "graphqlEndpoint", {
+      handler: graphqlLambda,
+    });
+
+   
+    
+     
+    }
   }
-}
+
+
